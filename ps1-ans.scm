@@ -20,9 +20,42 @@
 (define (comb n k)
   (/ (fact n)
      (* (fact k)
-        (fact (- n k)))))
+	(fact (- n k)))))
 
 (comb 243 90)
 ;Value: 193404342391239489855973693417880600543891038618846567058277413638164
 
-;;; Exercise 4: Practice with the editor
+;;; Exercise 11:
+(define foo1
+  (lambda (x)
+    (* x x)))
+(foo1 (sqrt 3))
+
+(define foo2
+  (lambda (x y)
+    (/ x y)))
+(foo2 6 2)
+
+(define foo3
+  (lambda (x)
+    (lambda (y)
+      (/ x y))))
+((foo3 6) 2)
+
+(define foo4
+  (lambda (x)
+    (x 3)))
+(foo4 (lambda (x) x))
+
+(define foo5
+  (lambda (x)
+    (cond ((= x 2)
+	   (lambda () x))
+	  (else
+	   (lambda () (* x 3))))))
+((foo5 1))
+
+(define foo6
+  (lambda (x)
+    (x (lambda (y) (y y)))))
+(foo6 (lambda (x) ((x (lambda (k) k)) 3)))
