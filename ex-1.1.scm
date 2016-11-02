@@ -68,3 +68,40 @@
 ; (p) which will lead to an infinite loop (as it evaluates to itself) while the
 ; interpreter using normal order won't try to evaluate it and will return the
 ; consequent (which is 0).
+
+;;; Exercise 1.6
+; It will recur infinitely as her procedure operands are evaluated before apply
+
+;;; Exercise 1.7
+(define (sqrt-iter guess x)
+  (if (good-enough? guess x)
+      guess
+      (sqrt-iter (improve guess x)
+		 x)))
+(define (improve guess x)
+  (average guess (/ x guess)))
+(define (average x y)
+  (/ (+ x y) 2))
+(define (good-enough? guess x)
+  (< (abs (- (square guess) x)) 0.001))
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+
+(sqrt (square 0.01))
+;Value: .03230844833048122
+
+(define (good-enough? guess x)
+  (< (/ (abs (- (improve guess x) guess)) guess) 0.001))
+
+;;; Exercise 1.8
+(define (cbrt x)
+  (cbrt-iter 1.0 x))
+(define (cbrt-iter guess x)
+  (if (good-enough? guess x)
+      guess
+      (cbrt-iter (improve guess x)
+		 x)))
+(define (improve guess x)
+  (/ (+ (/ x (square guess))
+	(* 2 guess))
+     3))
