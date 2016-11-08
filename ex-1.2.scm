@@ -55,3 +55,29 @@
 (define (h n) (A 2 n))
 ; (h n) evaluates to 2^(h(n-1)) for n > 1, to 2 for n = 1 and to 0 for n = 0
 
+;;; Exercise 1.11
+; Recursive
+(define (f n)
+  (if (< n 3)
+      n
+      (+ (f (- n 1))
+	 (* 2 (f (- n 2)))
+	 (* 3 (f (- n 3))))))
+; Iterative
+(define (f-iter i_3 i_2 i_1 count)
+  (if (= 0 count)
+      i_1
+      (f-iter i_2
+	      i_1
+	      (+ i_1
+		 (* 2 i_2)
+		 (* 3 i_3))
+	      (- count 1))))
+(define (f n)
+  (if (< n 3)
+      n
+      (f-iter 0 1 2 (- n 2))))
+
+;;; Exercise 1.15
+; a. p is applied 5 times.
+; b. the order of growth is logarithmic.
