@@ -196,3 +196,43 @@
 (search-for-primes 1000000000 1000000021) ; takes about 0.04 seconds
 (search-for-primes 10000000000 10000000061) ; takes about 0.13 seconds
 (search-for-primes 100000000000 100000000057) ; takes about 0.42 seconds
+
+;;; Exercise 1.23
+(define (smallest-divisor n)
+  (find-divisor n 2))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+    ((divides? test-divisor n) test-divisor)
+    (else (find-divisor n (next test-divisor)))))
+(define (next n)
+  (if (= n 2)
+      3
+      (+ n 2)))
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(search-for-primes 1000000000 1000000021) ; takes about 0.03 seconds
+(search-for-primes 10000000000 10000000061) ; takes about 0.08 seconds
+(search-for-primes 100000000000 100000000057) ; takes about 0.45 seconds
+
+; As the order of growth of the algorithm is O(sqrt(n)), then halving the input divides the time by sqrt(2) roughly.
+
+;;; Exercise 1.24
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+	((even? exp)
+	 (remainder (square (expmod base (/ exp 2) m))
+		    m))
+	(else
+	 (remainder (* base (expmod base (- exp 1) m))
+		    m))))
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+	((fermat-test n) (fast-prime? n (- times 1)))
+	(else false)))
+(define (prime? n)
+  (fast-prime? n 10))
