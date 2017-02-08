@@ -29,10 +29,10 @@
      (sum term 0 inc n)))
 
 (integral-simpson cube 0 1 100)
-;Value: 1/4
+;Value: .25
 
 (integral-simpson cube 0 1 1000)
-;Value: 1/4
+;Value: .25
 
 ;;; Exercise 1.30
 (define (sum term a next b)
@@ -117,3 +117,44 @@
   (define (inc x) (+ 1 x))
   (define (filter i) (= 1 (gcd i n)))
   (accumulate * 1 id 1 inc (- n 1) filter))
+
+;;; Exercise 1.35
+(define tolerance 0.00001)
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+	  next
+	  (try next))))
+  (try first-guess))
+
+(define (golden-ratio)
+  (fixed-point (lambda (x) (+ 1 (/ 1 x)))
+	       1.0))
+
+(golden-ratio)
+;Value: 1.6180327868852458
+
+;;; Exercise 1.36
+(define (verbose-fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (newline)
+      (display next)
+      (if (close-enough? guess next)
+	  next
+	  (try next))))
+  (try first-guess))
+
+(verbose-fixed-point (lambda (x) (/ (log 1000) (log x)))
+		     2.0)
+;Value: 4.555532270803653 (34 steps)
+(define (average a b)
+  (/ (+ a b) 2))
+(verbose-fixed-point (lambda (x) (average x (/ (log 1000) (log x))))
+		     2.0)
+;Value: 4.555537551999825 (9 steps)
