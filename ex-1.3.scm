@@ -158,3 +158,43 @@
 (verbose-fixed-point (lambda (x) (average x (/ (log 1000) (log x))))
 		     2.0)
 ;Value: 4.555537551999825 (9 steps)
+
+;;; Exercise 1.37a
+(define (cont-frac n d k)
+  (define (cont-frac-iter n d k acc)
+    (if (= k  1)
+	(/ (n 1) (+ (d 1) acc))
+	(cont-frac-iter n d (- k 1) (/ (n k) (+ (d k) acc)))))
+  (cont-frac-iter n d k 0.0))
+
+(cont-frac (lambda (i) 1.0)
+	   (lambda (i) 1.0)
+	   11)
+;Value: .6180555555555556 (k must be at least 11)
+
+;;; Exercise 1.37b
+(define (cont-frac n d k)
+  (define (cont-frac-rec n d i)
+    (if (= i k)
+	(/ (n i) (d i))
+	(/ (n i) (+ (d i) (cont-frac-rec n d (+ i 1))))))
+  (cont-frac-rec n d 1))
+
+;;; Exercise 1.38
+(+ 2
+   (cont-frac (lambda (i) 1.0)
+	      (lambda (i)
+		(if (= (remainder (- i 2) 3) 0)
+		    (+ 2 (* 2 (/ (- i 2) 3)))
+		    1))
+	      10))
+;Value: 2.7182817182817183
+
+;;; Exercise 1.39
+(define (tan-cf x k)
+  (cont-frac (lambda (i)
+	       (if (= i 1)
+		   x
+		   (- (* x x))))
+	     (lambda (i) (- (* 2 i) 1))
+	     k))
