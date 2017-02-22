@@ -198,3 +198,86 @@
 		   (- (* x x))))
 	     (lambda (i) (- (* 2 i) 1))
 	     k))
+
+;;; Exercise 1.40
+(define (deriv g)
+  (define dx 0.00001)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+(define (newtons-method g guess)
+  (define (newton-transform g)
+    (lambda (x)
+      (- x (/ (g x) ((deriv g) x)))))
+  (fixed-point (newton-transform g) guess))
+
+(define (cubic a b c)
+  (define (square x) (* x x))
+  (define (cube x) (* x (square x)))
+  (lambda (x) (+ (cube x) (* a (square x)) (* b x) c)))
+
+;;; Exercise 1.41
+(define (double f)
+  (lambda (x) (f (f x))))
+(define (inc x) (+ x 1))
+
+(((double (double double)) inc) 5)
+;Value: 21
+
+;;; Exercise 1.42
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+;;; Exercise 1.43
+(define (repeated f n)
+  (if (= 1 n)
+      (lambda (x) (f x))
+      (lambda (x) ((compose (repeated f (- n 1)) f) x))))
+
+;;; Exercise 1.44
+(define (smooth f)
+  (define dx 0.00001)
+  (lambda (x) (/ (+ (f (- x dx))
+		    (f x)
+		    (f (+ x dx)))
+		 3.0)))
+
+(define (n-fold-smooth f n)
+  (lambda (x) (((repeated smooth n) f) x)))
+
+;;; Exercise 1.45
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+(define (nth-root n)
+  (define r (if (= 0 (remainder n 2))
+		(/ n 2)
+		(/ (- n 1) 2)))
+  (define (pow n)
+    (lambda (x)
+      (if (= n 1)
+	  x
+	  (* x ((pow (- n 1)) x)))))
+  (lambda (x)
+    (fixed-point ((repeated average-damp r) (lambda (y) (/ x ((pow (- n 1)) y))))
+		 1.0)))
+
+;;; Exercise 1.46
+(define (iterative-improve good-enough? improve)
+  (define (try guess)
+    (if (good-enough? guess)
+	guess
+	(try (improve guess))))
+  (lambda (guess) (try guess)))
+
+(define (sqrt x)
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  ((iterative-improve good-enough? improve) 1.0))
+
+(define (fixed-point f first-guess)
+  (define (good-enough? guess)
+    (< (abs (- guess (f guess))) 0.0001))
+  ((iterative-improve good-enough? f) first-guess))
